@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Distinct Time">
+<meta name="description" content="Distinct Archives time tracker — manual hours and secure cloud sync.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.supabase.co; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Distinct / Time · Cloud</title>
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icon.svg">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./style.css">
+<script src="./app.js" defer></script>
+</head>
+<body>
+<header class="topbar"><div class="shell top-inner"><div class="brand"><img src="../distinct-logo.svg" alt="Distinct Archives" class="brand-symbol"><div><strong>DISTINCT <span>/ TIME</span></strong><small>Freelance work tracker</small></div></div><div class="cloud-indicator" id="cloudStatus"><span class="status-dot"></span><span id="cloudStatusText">Connect to sync</span></div></div></header>
+<main class="shell page" id="app" hidden>
+  <div class="page-head"><div><div class="eyebrow">DISTINCT / YOUR WORKSPACE</div><h1 id="pageTitle">Your time, accounted for<span class="accent">.</span></h1><p id="pageLead">Track sessions wherever you work. One secure account across devices.</p></div><button class="btn btn-outline btn-top-add" id="openManualTop" type="button">+ Add hours manually</button></div>
+  <section class="tab-view" id="dashboardView">
+    <div class="timer-card card"><div class="panel-head"><div class="eyebrow">CURRENT SESSION</div><div class="pill" id="timerStatus">READY</div></div>
+      <div class="timer-digits" id="timerClock" aria-label="Elapsed work time">00:00<span>:00</span></div>
+      <div class="timer-meta" id="timerMeta">Start a new session, or log hours you forgot to track.</div>
+      <div class="field-row">
+        <label class="field"><span>Project</span><select id="timerProject" required></select></label>
+        <label class="field"><span>Working on</span><input id="timerTask" type="text" maxlength="200" placeholder="Brand identity, website, meeting…" value="Design work"></label>
+      </div>
+      <div class="timer-actions"><button type="button" class="btn btn-primary" id="timerMain">▶ Start working</button><button type="button" class="btn btn-outline" id="timerFinish" hidden>Finish & save</button></div>
+      <div class="timer-foot"><span id="timerHint">Only working time counts. Pauses are excluded.</span><button type="button" class="plain-link" id="openManualInline">Forgot to track time? Add hours</button></div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="lower-grid"><section class="card white-panel"><div class="panel-head"><div><div class="eyebrow">BREAKDOWN</div><h2>Hours by project</h2></div><span class="sm-muted">This month</span></div><div id="projectBreakdown" class="project-breakdown"></div></section>
+    <section class="card white-panel"><div class="panel-head"><div><div class="eyebrow">LOG</div><h2>Recent work</h2></div><button class="plain-link" type="button" data-route="history">View all</button></div><div id="recentSessions"></div></section></div>
+  </section>
+  <section class="tab-view" id="historyView" hidden>
+    <div class="section-actions"><div class="eyebrow">ALL YOUR SESSIONS</div><button type="button" class="btn btn-primary btn-small" id="openManualHistory">+ Add missed hours</button></div>
+    <div class="card white-panel"><div class="history-filters"><label class="field"><span>Project</span><select id="historyProject"><option value="all">All projects</option></select></label><label class="field"><span>Period</span><select id="historyRange"><option value="week">This week</option><option value="month">This month</option><option value="all" selected>All time</option></select></label><div class="history-total"><span>Logged hours</span><strong id="historyTotal">0h 00m</strong></div></div><div id="historyRows"></div></div>
+  </section>
+  <section class="tab-view" id="projectsView" hidden>
+    <div class="section-actions"><div><div class="eyebrow">WORK ORGANIZATION</div><p class="sm-muted">Projects sync across your devices.</p></div><button type="button" id="openProjectAdd" class="btn btn-primary btn-small">+ New project</button></div>
+    <div class="card white-panel"><div id="projectRows"></div></div>
+  </section>
+  <section class="tab-view" id="settingsView" hidden>
+    <div class="card white-panel settings-card"><h2>Cloud & account</h2><p class="sm-muted">Your work is stored in your private Supabase database, not GitHub or the browser's old timer storage.</p><div class="setting-line"><div><strong>Signed in</strong><div class="sm-muted" id="accountEmail"></div></div><button type="button" class="btn btn-outline btn-small" id="signOut">Sign out</button></div><div class="setting-line"><div><strong>Sync status</strong><div class="sm-muted" id="lastSync">Waiting for a connection</div></div><button type="button" class="btn btn-outline btn-small" id="syncNow">Refresh</button></div>
+      <h2>Bring your previous hours</h2><p class="sm-muted">The old phone tracker stored hours in that device's browser. We never delete it automatically. Import old sessions once per device; duplicates are skipped.</p>
+      <div id="migrationSummary" class="migration-note"></div>
+      <div class="actions-wrap"><button type="button" class="btn btn-primary btn-small" id="importLocal">Import hours from this device</button><button type="button" class="btn btn-outline btn-small" id="importBackup">Import old JSON backup</button><input type="file" id="backupFile" accept=".json,application/json" hidden><button type="button" class="btn btn-outline btn-small" id="backupLegacy">Back up old local hours</button></div>
+      <div class="hint-warning" id="activeLegacyWarning" hidden>There's an unfinished timer in the old app. Open the old tracker and finish it before importing, then come back here.</div>
+      <p><a href="../" class="plain-link" target="_blank" rel="noopener noreferrer">Open your previous tracker ↗</a></p>
+      <h2>Exports</h2><p class="sm-muted">CSV and JSON exports contain your work details in readable form. Store them securely.</p>
+      <div class="actions-wrap"><button type="button" class="btn btn-outline btn-small" id="exportCsv">Export CSV</button><button type="button" class="btn btn-outline btn-small" id="exportJson">Back up cloud history (JSON)</button></div>
+      <p class="small-print">A network connection is required for live tracking. Your Supabase sign-in is stored locally on your device. Use a passcode or Face ID; sign out on shared computers. Neither GitHub Pages nor this app can read your financial information from Distinct Finance.</p>
+    </div>
+  </section>
+</main>
+<nav class="bottom-nav" id="bottomNav" hidden><button data-route="dashboard" class="tab active"><span class="tab-icon">◷</span>Timer</button><button data-route="history" class="tab"><span class="tab-icon">▤</span>History</button><button data-route="projects" class="tab"><span class="tab-icon">▦</span>Projects</button><button data-route="settings" class="tab"><span class="tab-icon">⚙</span>Settings</button></nav>
+<section class="auth-screen" id="authScreen"><div class="auth-card"><div class="eyebrow">DISTINCT ARCHIVES · CLOUD EDITION</div><h1>Every hour,<br>in its place<span class="accent">.</span></h1><p>Keep your tracked hours together on phone and computer. Use the same private Supabase project as Distinct Finance.</p>
+  <div class="auth-step" id="configStep"><form id="configForm"><label class="field"><span>Supabase project URL</span><input id="supabaseUrl" type="url" placeholder="https://xxxx.supabase.co" autocapitalize="none" autocomplete="off" spellcheck="false" required></label><label class="field"><span>Publishable key (not a secret key)</span><input id="supabaseKey" type="text" placeholder="sb_publishable_..." autocapitalize="none" autocomplete="off" spellcheck="false" required></label><button type="submit" class="btn btn-primary full">Connect Supabase</button></form><p class="sm-muted">Run <a href="./schema.sql" target="_blank" rel="noopener noreferrer">the Time Tracker database SQL</a> in your existing Supabase project first. The URL and publishable key are not secret credentials.</p></div>
+  <div class="auth-step" id="loginStep" hidden><form id="loginForm"><label class="field"><span>Email</span><input id="loginEmail" type="email" autocomplete="email" required></label><label class="field"><span>Password</span><input id="loginPassword" type="password" autocomplete="current-password" required minlength="6"></label><button type="submit" class="btn btn-primary full" id="loginButton">Sign in to sync</button></form><p class="sm-muted">Use the same login as Distinct Finance (same Supabase project).</p><button type="button" class="plain-link" id="changeConfig">Change Supabase project</button></div>
+  <div id="authMessage" role="alert" class="auth-message" hidden></div><div class="auth-bottom">Old tracker not affected. <a class="plain-link" href="../">Open previous version ↗</a></div>
+</div></section>
+<div class="modal-backdrop" id="modal" hidden><section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><div><div class="eyebrow" id="modalKicker">ADD WORK</div><h2 id="modalTitle">Add hours manually</h2></div><button type="button" id="modalClose" class="close-btn" aria-label="Close">×</button></div><form id="manualForm"><label class="field"><span>Project</span><select id="manualProject" required></select></label><label class="field"><span>Task / description</span><input id="manualTask" maxlength="200" placeholder="What did you work on?" required></label><div class="form-two"><label class="field"><span>Started at</span><input type="datetime-local" id="manualStart" required></label><label class="field"><span>Finished at</span><input type="datetime-local" id="manualEnd" required></label></div><div class="modal-duration" id="manualPreview">Duration —</div><div class="modal-actions"><button type="button" id="manualCancel" class="btn btn-outline">Cancel</button><button type="submit" class="btn btn-primary" id="manualSubmit">Save session</button></div></form>
+<form id="projectForm" hidden><label class="field"><span>Project name</span><input id="projectName" maxlength="100" placeholder="e.g. New Age" required></label><div class="modal-actions"><button type="button" class="btn btn-outline" id="projectCancel">Cancel</button><button type="submit" class="btn btn-primary">Add project</button></div></form></section></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
