@@ -1,0 +1,12 @@
+{
+  "id": "./",
+  "name": "Distinct Archives — Time Cloud",
+  "short_name": "Distinct Time",
+  "description": "Track freelance hours and sync across phone and desktop.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fb",
+  "theme_color": "#f7f8fb",
+  "icons": [{"src":"../icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]
+}
