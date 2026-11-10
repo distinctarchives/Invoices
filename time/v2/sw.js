@@ -1,5 +1,5 @@
 'use strict';
-const CACHE='distinct-time-cloud-v2-20261104';
+const CACHE='distinct-time-cloud-v2-20261110';
 const LOCAL=['./','./index.html','./style.css','./app.js','./manifest.webmanifest','./schema.sql','../icon.svg','../distinct-logo.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(LOCAL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(x=>x.startsWith('distinct-time-cloud-v2-')&&x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
